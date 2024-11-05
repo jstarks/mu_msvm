@@ -48,44 +48,44 @@ Return Value:
     EFI_STATUS status = EFI_SUCCESS;
     UINT32 virtualAddressBits;
 
-    __cpuid(cpuidResult.AsUINT32, HvCpuIdFunctionVersionAndFeatures);
+    AsmCpuid(HvCpuIdFunctionVersionAndFeatures, &cpuidResult.Eax, &cpuidResult.Ebx, &cpuidResult.Ecx, &cpuidResult.Edx);
     if (!cpuidResult.VersionAndFeatures.HypervisorPresent)
     {
-        DEBUG((DEBUG_INFO, __FUNCTION__" - Hypervisor is not present \n"));
+        DEBUG((DEBUG_INFO, "%a - Hypervisor is not present \n", __FUNCTION__));
         return;
     }
 
-    __cpuid(cpuidResult.AsUINT32, HvCpuIdFunctionHvInterface);
+    AsmCpuid(HvCpuIdFunctionHvInterface, &cpuidResult.Eax, &cpuidResult.Ebx, &cpuidResult.Ecx, &cpuidResult.Edx);
     if (cpuidResult.HvInterface.Interface != HvMicrosoftHypervisorInterface)
     {
-        DEBUG((DEBUG_INFO, __FUNCTION__" - Hypervisor interface is not present \n"));
+        DEBUG((DEBUG_INFO, "%a - Hypervisor interface is not present \n", __FUNCTION__));
         return;
     }
 
-    __cpuid(cpuidResult.AsUINT32, HvCpuIdFunctionMsHvFeatures);
+    AsmCpuid(HvCpuIdFunctionMsHvFeatures, &cpuidResult.Eax, &cpuidResult.Ebx, &cpuidResult.Ecx, &cpuidResult.Edx);
     if (!cpuidResult.MsHvFeatures.PartitionPrivileges.Isolation)
     {
-        DEBUG((DEBUG_INFO, __FUNCTION__" - Isolation is not present \n"));
+        DEBUG((DEBUG_INFO, "%a - Isolation is not present \n", __FUNCTION__));
         return;
     }
 
-    __cpuid(cpuidResult.AsUINT32, HvCpuidFunctionMsHvIsolationConfiguration);
+    AsmCpuid(HvCpuidFunctionMsHvIsolationConfiguration, &cpuidResult.Eax, &cpuidResult.Ebx, &cpuidResult.Ecx, &cpuidResult.Edx);
     switch (cpuidResult.MsHvIsolationConfiguration.IsolationType)
     {
     case HV_PARTITION_ISOLATION_TYPE_VBS:
-        static_assert(HV_PARTITION_ISOLATION_TYPE_VBS == UefiIsolationTypeVbs);
+        { STATIC_ASSERT(HV_PARTITION_ISOLATION_TYPE_VBS == UefiIsolationTypeVbs, "invalid definition"); }
         mIsolationType = UefiIsolationTypeVbs;
         break;
     case HV_PARTITION_ISOLATION_TYPE_SNP:
-        static_assert(HV_PARTITION_ISOLATION_TYPE_SNP == UefiIsolationTypeSnp);
+        { STATIC_ASSERT(HV_PARTITION_ISOLATION_TYPE_SNP == UefiIsolationTypeSnp, "invalid definition"); }
         mIsolationType = UefiIsolationTypeSnp;
         break;
     case HV_PARTITION_ISOLATION_TYPE_TDX:
-        static_assert(HV_PARTITION_ISOLATION_TYPE_TDX == UefiIsolationTypeTdx);
+        { STATIC_ASSERT(HV_PARTITION_ISOLATION_TYPE_TDX == UefiIsolationTypeTdx, "invalid definition"); }
         mIsolationType = UefiIsolationTypeTdx;
         break;
     case HV_PARTITION_ISOLATION_TYPE_NONE:
-        static_assert(HV_PARTITION_ISOLATION_TYPE_NONE == UefiIsolationTypeNone);
+        { STATIC_ASSERT(HV_PARTITION_ISOLATION_TYPE_NONE == UefiIsolationTypeNone, "invalid definition"); }
         return;
     default:
         ASSERT(FALSE);
@@ -113,12 +113,12 @@ Return Value:
     if (cpuidResult.MsHvIsolationConfiguration.SharedGpaBoundaryActive)
     {
         mSharedGpaBit = cpuidResult.MsHvIsolationConfiguration.SharedGpaBoundaryBits;
-        sharedGpaBoundary = 1UI64 << mSharedGpaBit;
+        sharedGpaBoundary = 1ull << mSharedGpaBit;
         sharedGpaCanonicalizationBitmask = 0;
         virtualAddressBits = 48;
         if (cpuidResult.MsHvIsolationConfiguration.SharedGpaBoundaryBits == (virtualAddressBits - 1))
         {
-            sharedGpaCanonicalizationBitmask = ~((1UI64 << virtualAddressBits) - 1);
+            sharedGpaCanonicalizationBitmask = ~((1ull << virtualAddressBits) - 1);
         }
         else if (cpuidResult.MsHvIsolationConfiguration.SharedGpaBoundaryBits > (virtualAddressBits - 1))
         {
@@ -151,7 +151,7 @@ Return Value:
 
 VOID
 HvDetectSvsm(
-    IN  PSNP_SECRETS    SecretsPage,
+    IN  VOID            *OpaqueSecretsPage,
     OUT UINT64          *SvsmBase,
     OUT UINT64          *SvsmSize
     )
@@ -177,6 +177,7 @@ Return Value:
 --*/
 {
     EFI_STATUS status;
+    PSNP_SECRETS SecretsPage = OpaqueSecretsPage;
 
     //
     // Examine the secrets page to determine whether any SVSM has declared its

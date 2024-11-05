@@ -9,6 +9,12 @@
 
 #define HV_MAXIMUM_PROCESSORS       2048
 
+# if defined(_MSC_VER)
+#  define HV_ALIGN(n) __declspec(align(n))
+# else
+#  define HV_ALIGN(n) __attribute__((aligned(n)))
+#endif
+
 //
 // Memory Types
 //

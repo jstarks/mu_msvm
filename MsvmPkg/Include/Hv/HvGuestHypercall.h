@@ -15,7 +15,7 @@
 //
 // Define a 128bit type.
 //
-typedef union __declspec(align(16)) _HV_UINT128
+typedef union HV_ALIGN(16) _HV_UINT128
 {
     struct
     {
@@ -32,7 +32,7 @@ typedef union __declspec(align(16)) _HV_UINT128
 // Define an alignment for structures passed via hypercall.
 //
 #define HV_CALL_ALIGNMENT   8
-#define HV_CALL_ATTRIBUTES __declspec(align(HV_CALL_ALIGNMENT))
+#define HV_CALL_ATTRIBUTES HV_ALIGN(HV_CALL_ALIGNMENT)
 
 //
 // Address spaces presented by the guest.

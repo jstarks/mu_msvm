@@ -76,7 +76,7 @@ Return Value:
 
 --*/
 {
-    Stall100ns(MicroSeconds * 10ui64);
+    Stall100ns(MicroSeconds * 10ull);
     return MicroSeconds;
 }
 
@@ -102,7 +102,7 @@ Return Value:
 
 --*/
 {
-    Stall100ns(NanoSeconds / 100ui64);
+    Stall100ns(NanoSeconds / 100ull);
     return NanoSeconds;
 }
 
@@ -182,7 +182,7 @@ Return Value:
         *EndValue = (UINT64)-1;
     }
 
-    return 10ui64 * 1000ui64 * 1000ui64;
+    return 10ull * 1000ull * 1000ull;
 }
 
 

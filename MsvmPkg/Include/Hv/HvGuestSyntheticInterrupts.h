@@ -306,7 +306,7 @@ typedef struct _HV_IOMMU_FAULT_MESSAGE_PAYLOAD
 // to be aligned. Therefore, this structure must be 16-byte aligned. The header
 // is 16B already.
 //
-typedef struct __declspec(align(16)) _HV_MESSAGE
+typedef struct HV_ALIGN(16) _HV_MESSAGE
 {
     HV_MESSAGE_HEADER Header;
     union

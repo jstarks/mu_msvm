@@ -15,6 +15,11 @@
 #include <Library/CrashLib.h>
 #include <Library/PrintLib.h>
 
+# if defined(_MSC_VER)
+#  define ALIGN(n) __declspec(align(n))
+# else
+#  define ALIGN(n) __attribute__((aligned(n)))
+#endif
 
 #define CPU_INTERRUPT_NUM  256
 
@@ -267,7 +272,7 @@ BdInitInterruptDescriptorTable (
   IA32_DESCRIPTOR           OldIdtPtr;
   IA32_IDT_GATE_DESCRIPTOR  *OldIdt;
   UINTN                     OldIdtSize;
-  __declspec(align(16)) IA32_DESCRIPTOR IdtPtr;
+  ALIGN(16) IA32_DESCRIPTOR IdtPtr;
   UINTN                     Index;
   UINT16                    CurrentCs;
   VOID                      *IntHandler;

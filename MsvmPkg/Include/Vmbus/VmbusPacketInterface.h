@@ -46,7 +46,7 @@ typedef struct _PACKET_LIB_CONTEXT
     // Incoming loop mutable fields. Keep these on their own cache line.
     //
 
-    __declspec(align(64))
+    HV_ALIGN(64)
     UINT32                  IncomingInCache;
     UINT32                  IncomingOut;
     UINT32                  EmptyRingBufferCount;
@@ -56,7 +56,7 @@ typedef struct _PACKET_LIB_CONTEXT
     // Outgoing loop mutable fields. Keep these on their own cache line.
     //
 
-    __declspec(align(64))
+    HV_ALIGN(64)
     UINT32                  OutgoingIn;
     UINT32                  OutgoingOutCache;
     UINT32                  PendingSendSize;
@@ -112,13 +112,13 @@ PkCleanup(
     IN  PACKET_LIB_HANDLE PkLibContext
     );
 
-static_assert(OFFSET_OF(VMPACKET_DESCRIPTOR, Type) < 8,
+STATIC_ASSERT(OFFSET_OF(VMPACKET_DESCRIPTOR, Type) < 8,
     "VMPACKET_DESCRIPTOR->Type is assumed to be within first 8 bytes of the structure.");
-static_assert(OFFSET_OF(VMPACKET_DESCRIPTOR, DataOffset8) < 8,
+STATIC_ASSERT(OFFSET_OF(VMPACKET_DESCRIPTOR, DataOffset8) < 8,
     "VMPACKET_DESCRIPTOR->DataOffset8 is assumed to be within first 8 bytes of the structure.");
-static_assert(OFFSET_OF(VMPACKET_DESCRIPTOR, Length8) < 8,
+STATIC_ASSERT(OFFSET_OF(VMPACKET_DESCRIPTOR, Length8) < 8,
     "VMPACKET_DESCRIPTOR->Length8 is assumed to be within first 8 bytes of the structure.");
-static_assert(OFFSET_OF(VMPACKET_DESCRIPTOR, Flags) < 8,
+STATIC_ASSERT(OFFSET_OF(VMPACKET_DESCRIPTOR, Flags) < 8,
     "VMPACKET_DESCRIPTOR->Flags is assumed to be within first 8 bytes of the structure.");
 
 #define PkWriteRingBuffer(_LibContext_,_Dest_,_Src_,_Length_) \
@@ -136,7 +136,7 @@ static_assert(OFFSET_OF(VMPACKET_DESCRIPTOR, Flags) < 8,
 #define PkWriteRingBufferField(singledest, singlesrc) \
     { \
         UINT64 _local_value_ = (singlesrc); \
-        static_assert(sizeof((singledest)) <= 8, "PkWriteRingBufferField requires the field to be <= size 8"); \
+        STATIC_ASSERT(sizeof((singledest)) <= 8, "PkWriteRingBufferField requires the field to be <= size 8"); \
         PkWriteRingBuffer(PkLibContext, &(singledest), &_local_value_, sizeof((singlesrc))); \
     }
 

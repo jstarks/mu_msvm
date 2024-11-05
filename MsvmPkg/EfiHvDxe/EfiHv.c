@@ -1594,7 +1594,7 @@ EfiHvConnectToHypervisor (
         // Validate that the hypervisor is present, is a Microsoft hypervisor,
         // and has all the required features.
         //
-        __cpuid(cpuidResult.AsUINT32, HvCpuIdFunctionVersionAndFeatures);
+        AsmCpuid(HvCpuIdFunctionVersionAndFeatures, &cpuidResult.Eax, &cpuidResult.Ebx, &cpuidResult.Ecx, &cpuidResult.Edx);
         if (!cpuidResult.VersionAndFeatures.HypervisorPresent)
         {
             status = EFI_UNSUPPORTED;
@@ -1602,7 +1602,7 @@ EfiHvConnectToHypervisor (
             goto Exit;
         }
 
-        __cpuid(cpuidResult.AsUINT32, HvCpuIdFunctionHvInterface);
+        AsmCpuid(HvCpuIdFunctionHvInterface, &cpuidResult.Eax, &cpuidResult.Ebx, &cpuidResult.Ecx, &cpuidResult.Edx);
         if (cpuidResult.HvInterface.Interface != HvMicrosoftHypervisorInterface)
         {
             status = EFI_UNSUPPORTED;
@@ -1804,11 +1804,11 @@ EfiHvConnectToHypervisor (
     }
     else
     {
-        __cpuid(cpuidResult.AsUINT32, HvCpuIdFunctionMsHvEnlightenmentInformation);
+        AsmCpuid(HvCpuIdFunctionMsHvEnlightenmentInformation, &cpuidResult.Eax, &cpuidResult.Ebx, &cpuidResult.Ecx, &cpuidResult.Edx);
         mAutoEoi = !cpuidResult.MsHvEnlightenmentInformation.DeprecateAutoEoi;
         DEBUG((DEBUG_VERBOSE, "--- %a: mAutoEoi 0x%x\n", __FUNCTION__, mAutoEoi));
 
-        __cpuid(cpuidResult.AsUINT32, HvCpuIdFunctionMsHvFeatures);
+        AsmCpuid(HvCpuIdFunctionMsHvFeatures, &cpuidResult.Eax, &cpuidResult.Ebx, &cpuidResult.Ecx, &cpuidResult.Edx);
         if (!(cpuidResult.MsHvFeatures.PartitionPrivileges.AccessPartitionReferenceCounter &&
               cpuidResult.MsHvFeatures.PartitionPrivileges.AccessSynicRegs &&
               cpuidResult.MsHvFeatures.PartitionPrivileges.AccessSyntheticTimerRegs &&

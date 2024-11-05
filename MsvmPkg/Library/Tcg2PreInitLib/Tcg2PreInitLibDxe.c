@@ -47,7 +47,7 @@ MsvmTpm2InitLibConstructorDxe (
   UINT64        TpmBaseAddress;
   UINT32        TcgProtocolVersion;
 
-  DEBUG(( DEBUG_INFO, __FUNCTION__"()\n" ));
+  DEBUG(( DEBUG_INFO, "%a()\n", __FUNCTION__ ));
 
   //
   // If the TPM not enabled, don't perform any more TPM init.
@@ -65,7 +65,7 @@ MsvmTpm2InitLibConstructorDxe (
   TcgProtocolVersion = ReadTpmPort(TpmIoGetTcgProtocolVersion);
 
   if ((TcgProtocolVersion != TcgProtocolTrEE) && (TcgProtocolVersion != TcgProtocolTcg2)) {
-    DEBUG(( DEBUG_ERROR, __FUNCTION__" - TPM device reports bad version! 0x%X\n", TcgProtocolVersion ));
+    DEBUG(( DEBUG_ERROR, "%a - TPM device reports bad version! 0x%X\n", __FUNCTION__, TcgProtocolVersion ));
     return EFI_DEVICE_ERROR;
   }
 

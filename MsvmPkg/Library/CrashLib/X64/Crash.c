@@ -21,6 +21,32 @@ TripleFault(
     IN  UINTN              Param3
 );
 
+#ifndef _MSC_VER
+
+VOID
+TripleFault(
+    IN  UINTN              ErrorCode,
+    IN  UINTN              Param1,
+    IN  UINTN              Param2,
+    IN  UINTN              Param3
+)
+{
+    __attribute__((aligned(16))) IA32_DESCRIPTOR IdtPtr = {0};
+    //
+    // Reset the IDT.
+    //
+    __asm__("lidt %0" : : "m"(IdtPtr));
+
+    //
+    // Use UD2 to cause a triple fault.
+    //
+    for (;;) {
+        __asm__("ud2" : : "a"(ErrorCode), "b"(Param1), "c"(Param2), "d"(Param3));
+    }
+}
+
+#endif
+
 VOID
 ResetAfterCrash(
     IN  UINTN              ErrorCode,
@@ -45,7 +71,7 @@ ReportCrash(
     // Determine if crash MSRs are supported
     //
     HV_CPUID_RESULT cpuidResult;
-    __cpuid(cpuidResult.AsUINT32, HvCpuIdFunctionMsHvFeatures);
+    AsmCpuid(HvCpuIdFunctionMsHvFeatures, &cpuidResult.Eax, &cpuidResult.Ebx, &cpuidResult.Ecx, &cpuidResult.Edx);
 
     if (!cpuidResult.MsHvFeatures.GuestCrashRegsAvailable)
     {

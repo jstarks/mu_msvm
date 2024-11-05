@@ -48,7 +48,7 @@
 
 #define TPL_NETVSC_CALLBACK                (TPL_CALLBACK + 2)
 
-INTERNAL_EVENT_SERVICES_PROTOCOL *mInternalEventServices = NULL;
+static INTERNAL_EVENT_SERVICES_PROTOCOL *mInternalEventServices = NULL;
 
 
 EFI_STATUS

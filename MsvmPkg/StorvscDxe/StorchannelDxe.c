@@ -9,7 +9,7 @@
 
 #include "StorvscDxe.h"
 
-#include <Industrystandard/Scsi.h>
+#include <IndustryStandard/Scsi.h>
 #include <Vmbus/NtStatus.h>
 
 #include "StorportDxe.h"
@@ -44,9 +44,8 @@ const STOR_CHANNEL_PROTOCOL_VERSION g_StorChannelSupportedVersions[] =
 //
 #define EFI_SCSI_OP_REPORT_LUNS 0xA0
 
-INTERNAL_EVENT_SERVICES_PROTOCOL *mInternalEventServices = NULL;
+static INTERNAL_EVENT_SERVICES_PROTOCOL *mInternalEventServices = NULL;
 
-__forceinline
 BOOLEAN
 StorChannelIsValidDataBuffer (
     IN  const VOID* Buffer,

@@ -18,8 +18,8 @@
         MS_UI_CUSTOM_FONT_ ## NAME ## _CELL_HEIGHT,   \
         MS_UI_CUSTOM_FONT_ ## NAME ## _CELL_WIDTH,    \
         MS_UI_CUSTOM_FONT_ ## NAME ## _MAX_ADVANCE,   \
-        sizeof (mMsUiFontPackageHdr_ ## NAME ## ),    \
-        sizeof (mMsUiFontPackageGlyphs_ ## NAME ## ), \
+        sizeof (mMsUiFontPackageHdr_ ## NAME),        \
+        sizeof (mMsUiFontPackageGlyphs_ ## NAME),     \
         FILLED_AT_RUNTIME, \
         FILLED_AT_RUNTIME \
     };

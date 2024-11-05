@@ -19,7 +19,8 @@
 
 [Sources.X64]
   X64/Crash.c
-  X64/FailFast.asm
+  X64/FailFast.asm | MSFT
+  X64/FailFast.asm | GCC
 
 [Sources.AARCH64]
   AArch64/Crash.c

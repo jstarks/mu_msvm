@@ -7,9 +7,13 @@
 
 #if defined(MDE_CPU_X64)
 
+#ifdef _MSC_VER
 #define MemoryBarrier() __faststorefence()
+#else
+#define MemoryBarrier() __asm__ __volatile__("sfence" ::: "memory")
+#endif
 
-__forceinline
+static inline
 INT32
 ReadAcquire (
     IN  INT32 const volatile *Source
@@ -22,7 +26,7 @@ ReadAcquire (
     return value;
 }
 
-__forceinline
+static inline
 INT32
 ReadNoFence (
     IN INT32 const volatile *Source
@@ -35,7 +39,7 @@ ReadNoFence (
     return value;
 }
 
-__forceinline
+static inline
 VOID
 WriteNoFence (
     OUT INT32 volatile *Destination,
@@ -48,7 +52,7 @@ WriteNoFence (
     return;
 }
 
-__forceinline
+static inline
 VOID
 WriteNoFence16 (
     OUT INT16 volatile *Destination,
@@ -61,7 +65,7 @@ WriteNoFence16 (
     return;
 }
 
-__forceinline
+static inline
 VOID
 WriteRelease (
     OUT INT32 volatile *Destination,
@@ -99,7 +103,7 @@ void __dmb(unsigned int _Type);
 
 #define MemoryBarrier() __dmb(_ARM64_BARRIER_SY)
 
-__forceinline
+static inline
 INT32
 ReadAcquire (
     IN  INT32 const volatile *Source
@@ -113,7 +117,7 @@ ReadAcquire (
     return value;
 }
 
-__forceinline
+static inline
 INT32
 ReadNoFence (
     IN  INT32 const volatile *Source
@@ -126,7 +130,7 @@ ReadNoFence (
     return value;
 }
 
-__forceinline
+static inline
 VOID
 WriteNoFence16 (
     OUT INT16 volatile *Destination,
@@ -138,7 +142,7 @@ WriteNoFence16 (
     return;
 }
 
-__forceinline
+static inline
 VOID
 WriteNoFence (
     OUT INT32 volatile *Destination,
@@ -150,7 +154,7 @@ WriteNoFence (
     return;
 }
 
-__forceinline
+static inline
 VOID
 WriteRelease (
     OUT INT32 volatile *Destination,

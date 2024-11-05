@@ -31,7 +31,7 @@ typedef struct _EMCL_LIB_COMPLETION_CONTEXT
 extern EFI_GUID gEfiEmclTagProtocolGuid;
 extern EFI_GUID gEfiVmbusChannelDevicePathGuid;
 
-INTERNAL_EVENT_SERVICES_PROTOCOL *mInternalEventServices = NULL;
+static INTERNAL_EVENT_SERVICES_PROTOCOL *mInternalEventServices = NULL;
 
 
 EFI_STATUS
@@ -82,7 +82,7 @@ Return Value:
 
     status = gBS->HandleProtocol(handle,
                                  &gEfiDriverBindingProtocolGuid,
-                                 &driverBinding);
+                                 (VOID **)&driverBinding);
 
     ASSERT_EFI_ERROR(status);
 

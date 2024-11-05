@@ -56,7 +56,7 @@ struct _VMBUS_ROOT_CONTEXT
     UINT32 FeatureFlags;
 };
 
-INTERNAL_EVENT_SERVICES_PROTOCOL *mInternalEventServices = NULL;
+static INTERNAL_EVENT_SERVICES_PROTOCOL *mInternalEventServices = NULL;
 
 VOID
 EFIAPI

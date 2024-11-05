@@ -188,7 +188,20 @@ EFI_STATUS
 
 #pragma warning(disable : 4201)
 struct _EFI_EMCL_V2_PROTOCOL {
-    EFI_EMCL_PROTOCOL;
+    EFI_EMCL_START_CHANNEL StartChannel;
+    EFI_EMCL_STOP_CHANNEL StopChannel;
+
+    EFI_EMCL_SEND_PACKET SendPacket;
+    EFI_EMCL_COMPLETE_PACKET CompletePacket;
+    EFI_EMCL_SET_RECEIVE_CALLBACK SetReceiveCallback;
+
+    EFI_EMCL_CREATE_GPADL CreateGpadl;
+    EFI_EMCL_DESTROY_GPADL DestroyGpadl;
+    EFI_EMCL_GET_GPADL_HANDLE GetGpadlHandle;
+    EFI_EMCL_GET_GPADL_BUFFER GetGpadlBuffer;
+
+    EFI_EMCL_CREATE_GPA_RANGE CreateGpaRange;
+    EFI_EMCL_DESTROY_GPA_RANGE DestroyGpaRange;
 
     EFI_EMCL_SEND_PACKET_EX SendPacketEx;
 };
