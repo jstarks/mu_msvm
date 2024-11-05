@@ -21,6 +21,32 @@
 
 #if defined(MDE_CPU_X64)
 
+#ifndef _MSC_VER
+
+
+VOID
+_tdx_vmcall_wrmsr(
+    UINT32 MsrIndex,
+    UINT64 MsrValue
+    ) { }
+
+UINT64
+_tdx_vmcall_rdmsr(
+    UINT32 MsrIndex
+    ) { return 0; }
+
+HV_HYPERCALL_OUTPUT
+HvHypercallpIssueTdxHypercall(
+    IN  HV_HYPERCALL_INPUT  Control,
+        UINT64              InputPhysicalAddress,
+        UINT64              OutputPhysicalAddress
+    )
+{
+    return (HV_HYPERCALL_OUTPUT){0};
+}
+
+#endif
+
 HV_HYPERCALL_OUTPUT
 HvHypercallpIssueTdxHypercall(
     IN  HV_HYPERCALL_INPUT  Control,

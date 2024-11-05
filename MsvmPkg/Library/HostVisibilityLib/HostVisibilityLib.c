@@ -37,6 +37,30 @@ SpecialGhcbCall(
     UINT64 GhcbValue
     );
 
+
+#ifndef _MSC_VER
+
+UINT64
+VispCallSvsm(
+    UINT64 CallCode,
+    UINT64 Parameter
+    ) { return 0; }
+
+UINT64
+_sev_pvalidate(
+    IN  VOID    *Address,
+        UINT32  PageSize,
+        UINT32  Validate,
+    OUT UINT64  *ErrorCode
+    ) { return 0; }
+
+UINT64
+SpecialGhcbCall(
+    UINT64 GhcbValue
+    ) { return 0; }
+
+#endif
+
 #pragma warning(disable : 4201)
 typedef union _GHCB_MSR
 {
@@ -112,6 +136,21 @@ _tdx_vmcall_map_gpa(
     OUT OPTIONAL    UINT64  *FailedGpa
     );
 
+#ifndef _MSC_VER
+
+UINT64
+_tdx_tdg_mem_page_accept(
+    TDX_ACCEPT_GPA AcceptGpa
+    ) { return 0; }
+
+UINT64
+_tdx_vmcall_map_gpa(
+                    UINT64  Gpa,
+                    UINT64  Size,
+    OUT OPTIONAL    UINT64  *FailedGpa
+    ) { return 0; }
+
+#endif
 
 EFI_STATUS
 EfiUpdatePageRangeAcceptanceSnp(

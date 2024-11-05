@@ -11,6 +11,17 @@
 #include <Library/DebugLib.h>
 #include <Library/GhcbLib.h>
 
+#ifndef _MSC_VER
+
+VOID
+_sev_vmgexit(
+    VOID
+    )
+{
+}
+
+#endif
+
 EFI_TPL
 GhcbpDisableInterrupts(
     VOID
