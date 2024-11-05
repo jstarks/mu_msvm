@@ -154,7 +154,6 @@ Return Value:
 }
 
 
-__forceinline
 VOID
 EventChannelLock(
     IN      EVENT_CHANNEL              *Channel
@@ -179,7 +178,6 @@ Return Value:
 }
 
 
-__forceinline
 VOID
 EventChannelUnlock(
     IN      EVENT_CHANNEL              *Channel

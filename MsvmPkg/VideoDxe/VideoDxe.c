@@ -677,6 +677,9 @@ Return Value:
                     BytesPerLine);
         }
         break;
+
+    default:
+        break;
     }
 
     gBS->RestoreTPL (OriginalTPL);

@@ -258,9 +258,9 @@ Return Value:
 void
 DateToSmbiosDate(
     IN  char    *Source,
-        size_t  SourceSizeInBytes,
+        UINTN   SourceSizeInBytes,
     IN  char    *Dest,
-        size_t  DestSizeInBytes
+        UINTN   DestSizeInBytes
     )
 /*++
 
@@ -481,7 +481,7 @@ Return Value:
             MINOR_RELEASE_VERSION,
             0xFF, // no field upgradeable embedded controller firmware
             0xFF, // no field upgradeable embedded controller firmware
-            0, // Extended Bios ROM Size
+            { 0 }, // Extended Bios ROM Size
         }
     };
 
@@ -723,7 +723,7 @@ Return Value:
             // so the contained elements value in this structure is actually the
             // SKU Number string index, as access to the SKU Number string
             // index is based on the above two values.
-            { 5 }, // SKU Number string index
+            { { 5 } }, // SKU Number string index
         }
     };
 
@@ -815,7 +815,7 @@ Return Value:
             SMBIOS_HANDLE_PI_RESERVED, // Chassis Handle
             BaseBoardTypeMotherBoard, // Board Type
             0, // Number of Contained Object Handles
-            SMBIOS_HANDLE_PI_RESERVED, // Contained Object Handles
+            { SMBIOS_HANDLE_PI_RESERVED }, // Contained Object Handles
         }
     };
 
@@ -895,7 +895,7 @@ Return Value:
             0, // ProcessorType
             0, // ProcessorFamily
             2, // ProcessorManufacturer string index
-            {0, 0, 0, 0, 0, 0, 0, 0}, // ProcessorId
+            { { 0, 0, 0, 0, 0, 0, 0, 0 } }, // ProcessorId
             3, // ProcessorVersion string index
             {0}, // Voltage
             0, // ExternalClock
@@ -1579,7 +1579,7 @@ Return Value:
         {
             STANDARD_HEADER(SMBIOS_TABLE_TYPE32, EFI_SMBIOS_TYPE_SYSTEM_BOOT_INFORMATION),
             { 0 }, // Reserved
-            { BootInformationStatusNoError } // Boot Status
+            BootInformationStatusNoError // Boot Status
         },
         {
             0, // terminator bytes
