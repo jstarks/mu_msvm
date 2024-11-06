@@ -123,7 +123,7 @@ Returns:
     status = gBS->AllocatePool(
         EfiBootServicesData,
         totalPathLen,
-        &devicePtr);
+        (VOID **)&devicePtr);
 
     if (status != EFI_SUCCESS)
     {
@@ -314,7 +314,7 @@ Return Value:
         gBS->OpenProtocol(
             DeviceHandle,
             &gEfiSimpleNetworkProtocolGuid,
-            &SnpProtocol,
+            (VOID **)&SnpProtocol,
             This->DriverBindingHandle,
             ControllerHandle,
             EFI_OPEN_PROTOCOL_GET_PROTOCOL);
@@ -532,7 +532,7 @@ Return Value:
     status = gBS->AllocatePool(
         EfiBootServicesData,
         sizeof (NETVSC_ADAPTER_CONTEXT),
-        &adapterContext);
+        (VOID **)&adapterContext);
 
     if (EFI_ERROR(status))
     {

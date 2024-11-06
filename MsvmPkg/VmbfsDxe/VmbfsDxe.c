@@ -186,7 +186,7 @@ Return Value:
     status =
         gBS->AllocatePool(EfiBootServicesData,
                           sizeof(*simpleFileSystemProtocol),
-                          &simpleFileSystemProtocol);
+                          (VOID **)&simpleFileSystemProtocol);
 
     if (EFI_ERROR(status))
     {
@@ -199,7 +199,7 @@ Return Value:
     status = gBS->OpenProtocol(
         ControllerHandle,
         &gEfiDevicePathProtocolGuid,
-        &devicePath,
+        (VOID **)&devicePath,
         This->DriverBindingHandle,
         ControllerHandle,
         EFI_OPEN_PROTOCOL_BY_DRIVER);

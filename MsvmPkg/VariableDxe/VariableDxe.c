@@ -11,7 +11,7 @@
 **/
 
 #include <Library/BaseMemoryLib.h>
-#include <Library/Baselib.h>
+#include <Library/BaseLib.h>
 #include <Library/DebugLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/UefiRuntimeLib.h>
@@ -57,7 +57,7 @@
 // Defines for the guid and variables associated with the private HyperV namespace.
 //
 #define HYPERV_PRIVATE_NAMESPACE \
-  { 0x610b9e98, 0xc6f6, 0x47f8, 0x8b, 0x47, 0x2d, 0x2d, 0xa0, 0xd5, 0x2a, 0x91 }
+  { 0x610b9e98, 0xc6f6, 0x47f8, { 0x8b, 0x47, 0x2d, 0x2d, 0xa0, 0xd5, 0x2a, 0x91 } }
 
 //
 // The attribute for this volative variable is BS.
@@ -1154,8 +1154,6 @@ Returns:
     EFI_STATUS status;
     VARIABLE_HEADER* variable;
     UINT32 varNameSize;
-    static CHAR16 emptyName[1];
-
 
     if (VariableNameSize == NULL || VariableName == NULL || VendorGuid == NULL)
     {

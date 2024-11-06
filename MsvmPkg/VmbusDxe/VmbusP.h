@@ -44,10 +44,10 @@ typedef struct _GPA_RANGE
 #define EFI_VMBUS_CHANNEL_DEVICE_PATH_GUID \
     {0x9b17e5a2, 0x891, 0x42dd, {0xb6, 0x53, 0x80, 0xb5, 0xc2, 0x28, 0x9, 0xba}}
 
-EFI_HV_PROTOCOL *mHv;
-EFI_HV_IVM_PROTOCOL *mHvIvm;
-UINTN mSharedGpaBoundary;
-UINT64 mCanonicalizationMask;
+extern EFI_HV_PROTOCOL *mHv;
+extern EFI_HV_IVM_PROTOCOL *mHvIvm;
+extern UINTN mSharedGpaBoundary;
+extern UINT64 mCanonicalizationMask;
 
 extern EFI_GUID gEfiVmbusChannelDevicePathGuid;
 
@@ -57,50 +57,6 @@ extern EFI_GUID gEfiVmbusChannelDevicePathGuid;
 // purposes, so we give the VMBus channels a dummy tag protocol to consume.
 //
 extern EFI_GUID gEfiVmbusRootProtocolGuid;
-
-//
-// Keep track of the GUIDs of channels that are created during the UEFI boot phase.
-//
-// The following VmBus channels are supported during UEFI:
-//
-//      Storage channel (StorvscDxe)
-//      Networking channel (NetvscDxe)
-//      Video channel (VideoDxe)
-//      Virtual SMB channel (VmbfsDxe)
-//      Keyboard channel (SynthKeyDxe)
-//      Virtual PCI channel (VpcivscDxe)
-//
-// For isolated guests, only allow the channels for drivers that have been triaged for security
-// and guest hardening.
-//
-// The following channels have gone through a security review and are allowed during UEFI:
-//
-//      Storage channel (StorvscDxe)
-//      Networking channel (NetvscDxe)
-//      Virtual PCI channel (VpcivscDxe)
-//
-typedef struct
-{
-    BOOLEAN IsAllowedWhenIsolated;
-    EFI_GUID AllowedGuid;
-
-} VMBUS_ROOT_ALLOWED_GUIDS;
-
-VMBUS_ROOT_ALLOWED_GUIDS gAllowedGuids[] =
-{
-    {TRUE, { 0xba6163d9, 0x04a1, 0x4d29, {0xb6, 0x05, 0x72, 0xe2, 0xff, 0xb1, 0xdc, 0x7f} }},   // StorvscDxe
-    {TRUE, { 0xf8615163, 0xdf3e, 0x46c5, {0x91, 0x3f, 0xf2, 0xd2, 0xf9, 0x65, 0xed, 0xe} }},    // NetvscDxe
-    {TRUE, { 0x44c4f61d, 0x4444, 0x4400, {0x9d, 0x52, 0x80, 0x2e, 0x27, 0xed, 0xe1, 0x9f} }},   // VpcivscDxe
-    {FALSE, { 0xda0a7802, 0xe377, 0x4aac, {0x8e, 0x77, 0x05, 0x58, 0xeb, 0x10, 0x73, 0xf8} }},  // VideoDxe
-    {FALSE, { 0xc376c1c3, 0xd276, 0x48d2, {0x90, 0xa9, 0xc0, 0x47, 0x48, 0x07, 0x2c, 0x60} }},  // VmbfsDxe
-    {FALSE, { 0xf912ad6d, 0x2b17, 0x48ea, {0xbd, 0x65, 0xf9, 0x27, 0xa6, 0x1c, 0x76, 0x84} }}   // SynthKeyDxe
-};
-
-//
-// IMC is a special channel for now and is controlled using the UEFI flag. Having an IMC channel lets us remove
-// the extra reboot after provisioning for setting the computer name.
-//
-EFI_GUID gVmbfsChannelGuid =  {0xc376c1c3, 0xd276, 0x48d2, {0x90, 0xa9, 0xc0, 0x47, 0x48, 0x07, 0x2c, 0x60}};
 
 typedef struct
 {
@@ -126,9 +82,9 @@ typedef struct
 
 } VMBUS_CHANNEL_DEVICE_PATH;
 
-VMBUS_ROOT_NODE gVmbusRootNode;
-VMBUS_DEVICE_PATH gVmbusChannelNode;
-EFI_DEVICE_PATH_PROTOCOL gEfiEndNode;
+extern VMBUS_ROOT_NODE gVmbusRootNode;
+extern VMBUS_DEVICE_PATH gVmbusChannelNode;
+extern EFI_DEVICE_PATH_PROTOCOL gEfiEndNode;
 
 #define TPL_VMBUS (TPL_HIGH_LEVEL - 1)
 #define VMBUS_MAX_GPADLS 256

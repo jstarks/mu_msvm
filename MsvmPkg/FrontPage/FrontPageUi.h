@@ -40,14 +40,12 @@ UiCallback (
   OUT EFI_BROWSER_ACTION_REQUEST             *ActionRequest
   );
 
-STATIC
 EFI_STATUS
 HandleAssetTagDisplay(
   IN  EFI_IFR_TYPE_VALUE                     *Value,
   OUT EFI_BROWSER_ACTION_REQUEST             *ActionRequest
   );
 
-STATIC
 EFI_STATUS
 SetSystemPassword (
   IN  EFI_IFR_TYPE_VALUE                     *Value,
@@ -65,21 +63,18 @@ SetSystemPassword (
   @retval   Others          Return value of mSWMProtocol->MessageBox().
 
 **/
-STATIC
 EFI_STATUS
 HandleInfoPopup(
               IN  EFI_IFR_TYPE_VALUE                     *Value,
               OUT EFI_BROWSER_ACTION_REQUEST             *ActionRequest
               );
 
-STATIC
 EFI_STATUS
 HandleLanguage(
   IN  EFI_IFR_TYPE_VALUE                     *Value,
   OUT EFI_BROWSER_ACTION_REQUEST             *ActionRequest
   );
 
-STATIC
 EFI_STATUS
 HandleBootMenu(
   IN  EFI_IFR_TYPE_VALUE                     *Value,
@@ -94,7 +89,6 @@ HandleBootMenu(
   @retval Others              Failed to install. SecureBoot is still disabled.
 
 **/
-STATIC
 EFI_STATUS
 HandleSecureBootChange (
   IN  EFI_IFR_TYPE_VALUE                     *Value,
@@ -121,7 +115,6 @@ UpdateSecureBootStatusStrings (
   @retval Others              Failed to update. TPM state remains unchanged.
 
 **/
-STATIC
 EFI_STATUS
 HandleTpmChange (
   IN  EFI_IFR_TYPE_VALUE                     *Value,
@@ -135,7 +128,6 @@ HandleTpmChange (
   @retval EFI_SUCCESS
 
 **/
-STATIC
 EFI_STATUS
 HandleRebootToFrontPage (
   IN  EFI_IFR_TYPE_VALUE                     *Value,

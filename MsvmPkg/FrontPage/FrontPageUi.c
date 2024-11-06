@@ -130,7 +130,6 @@ UiCallback (
   @retval EFI_SUCCESS
 
 **/
-STATIC
 EFI_STATUS
 HandleRebootToFrontPage (
   IN  EFI_IFR_TYPE_VALUE                     *Value,

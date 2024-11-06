@@ -6,6 +6,8 @@
 
 **/
 
+#ifdef _MSC_VER
+
 #include <Hv/HvGuestCpuid.h>
 #include <Hv/HvGuestMsr.h>
 #include <Library/BaseLib.h>
@@ -228,7 +230,7 @@ SecInitializeHardwareIsolation (
 
         if (mIsolationConfiguration.SharedGpaBoundaryActive)
         {
-            sharedGpaBoundary = (1UI64 << mIsolationConfiguration.SharedGpaBoundaryBits);
+            sharedGpaBoundary = (1ull << mIsolationConfiguration.SharedGpaBoundaryBits);
         }
         else
         {
@@ -292,7 +294,7 @@ SecInitializeHardwareIsolation (
                 {
                     cpuidInfo->MaximumLeafIndex = leafNumber;
                 }
-                cpuidInfo->SupportedLeaves |= (1UI64 << leafNumber);
+                cpuidInfo->SupportedLeaves |= (1ull << leafNumber);
             }
         }
     }
@@ -526,7 +528,7 @@ SecProcessVirtualCpuid (
         leafNumber = leaf & 0x0FFFFFFF;
         if ((cpuidInfo == NULL) ||
             (leafNumber > cpuidInfo->MaximumLeafIndex) ||
-            ((cpuidInfo->SupportedLeaves & (1UI64 << leafNumber)) == 0))
+            ((cpuidInfo->SupportedLeaves & (1ull << leafNumber)) == 0))
         {
             return FALSE;
         }
@@ -671,7 +673,7 @@ SecProcessIoPortRead(
 
     value = SecTdCallReadIoPort(PortNumber, AccessSize);
     rax = TrapFrame->Rax;
-    mask = ((1UI64 << (AccessSize * 8)) - 1);
+    mask = ((1ull << (AccessSize * 8)) - 1);
     rax = (rax & ~mask) | (value & mask);
     if (AccessSize == 4)
     {
@@ -706,7 +708,7 @@ SecProcessIoPortWrite(
         return FALSE;
     }
 
-    mask = ((1UI64 << (AccessSize * 8)) - 1);
+    mask = ((1ull << (AccessSize * 8)) - 1);
     value =  (UINT32)(TrapFrame->Rax & mask);
     SecTdCallWriteIoPort(PortNumber, AccessSize, value);
 
@@ -856,3 +858,5 @@ FailVe:
 
     return FALSE;
 }
+
+#endif

@@ -58,6 +58,56 @@ struct _VMBUS_ROOT_CONTEXT
 
 static INTERNAL_EVENT_SERVICES_PROTOCOL *mInternalEventServices = NULL;
 
+
+//
+// Keep track of the GUIDs of channels that are created during the UEFI boot phase.
+//
+// The following VmBus channels are supported during UEFI:
+//
+//      Storage channel (StorvscDxe)
+//      Networking channel (NetvscDxe)
+//      Video channel (VideoDxe)
+//      Virtual SMB channel (VmbfsDxe)
+//      Keyboard channel (SynthKeyDxe)
+//      Virtual PCI channel (VpcivscDxe)
+//
+// For isolated guests, only allow the channels for drivers that have been triaged for security
+// and guest hardening.
+//
+// The following channels have gone through a security review and are allowed during UEFI:
+//
+//      Storage channel (StorvscDxe)
+//      Networking channel (NetvscDxe)
+//      Virtual PCI channel (VpcivscDxe)
+//
+typedef struct
+{
+    BOOLEAN IsAllowedWhenIsolated;
+    EFI_GUID AllowedGuid;
+
+} VMBUS_ROOT_ALLOWED_GUIDS;
+
+VMBUS_ROOT_ALLOWED_GUIDS gAllowedGuids[] =
+{
+    {TRUE, { 0xba6163d9, 0x04a1, 0x4d29, {0xb6, 0x05, 0x72, 0xe2, 0xff, 0xb1, 0xdc, 0x7f} }},   // StorvscDxe
+    {TRUE, { 0xf8615163, 0xdf3e, 0x46c5, {0x91, 0x3f, 0xf2, 0xd2, 0xf9, 0x65, 0xed, 0xe} }},    // NetvscDxe
+    {TRUE, { 0x44c4f61d, 0x4444, 0x4400, {0x9d, 0x52, 0x80, 0x2e, 0x27, 0xed, 0xe1, 0x9f} }},   // VpcivscDxe
+    {FALSE, { 0xda0a7802, 0xe377, 0x4aac, {0x8e, 0x77, 0x05, 0x58, 0xeb, 0x10, 0x73, 0xf8} }},  // VideoDxe
+    {FALSE, { 0xc376c1c3, 0xd276, 0x48d2, {0x90, 0xa9, 0xc0, 0x47, 0x48, 0x07, 0x2c, 0x60} }},  // VmbfsDxe
+    {FALSE, { 0xf912ad6d, 0x2b17, 0x48ea, {0xbd, 0x65, 0xf9, 0x27, 0xa6, 0x1c, 0x76, 0x84} }}   // SynthKeyDxe
+};
+
+//
+// IMC is a special channel for now and is controlled using the UEFI flag. Having an IMC channel lets us remove
+// the extra reboot after provisioning for setting the computer name.
+//
+EFI_GUID gVmbfsChannelGuid =  {0xc376c1c3, 0xd276, 0x48d2, {0x90, 0xa9, 0xc0, 0x47, 0x48, 0x07, 0x2c, 0x60}};
+
+EFI_HV_PROTOCOL *mHv;
+EFI_HV_IVM_PROTOCOL *mHvIvm;
+UINTN mSharedGpaBoundary;
+UINT64 mCanonicalizationMask;
+
 VOID
 EFIAPI
 VmbusRootSintNotify(
@@ -212,8 +262,8 @@ VMBUS_ROOT_NODE gVmbusRootNode =
         0
     },
     VMBUS_ROOT_NODE_HID_STR,
-    '\0',
-    '\0'
+    { '\0' },
+    { '\0' }
 };
 
 EFI_DEVICE_PATH_PROTOCOL gEfiEndNode =
@@ -761,7 +811,6 @@ VmbusRootSintNotify (
     }
 }
 
-
 VOID
 VmbusRootScanEventFlags(
     IN  VMBUS_ROOT_CONTEXT *RootContext,
@@ -796,9 +845,26 @@ VmbusRootScanEventFlags(
     wordCount = RootContext->MaxInterruptUsed / 64 + 1;
     for (wordIndex = 0; wordIndex < wordCount; ++wordIndex)
     {
+#ifdef _MSC_VER
         currentWord = _InterlockedExchange64(&flags[wordIndex], 0);
-        while(_BitScanForward64(&bitIndex, currentWord) != 0)
+#else
+        currentWord = __atomic_exchange_n(&flags[wordIndex], 0, __ATOMIC_ACQUIRE);
+#endif
+        for (;;)
         {
+#ifdef _MSC_VER
+            if (_BitScanForward64(&bitIndex, currentWord) == 0)
+            {
+                break;
+            }
+#else
+            bitIndex = __builtin_ffsll(currentWord);
+            if (bitIndex == 0)
+            {
+                break;
+            }
+            bitIndex -= 1;
+#endif
             currentWord &= ~((UINT64)1 << bitIndex);
             gBS->SignalEvent(
                     RootContext->Channels[wordIndex * 64 + bitIndex]->Interrupt);

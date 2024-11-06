@@ -91,8 +91,8 @@ STATIC_ASSERT(OFFSET_OF(EVENT_CHANNEL,Id) == 0, "invalid definition");
 //
 EFI_HANDLE  mEventChannels      = NULL;
 
-EFI_HV_PROTOCOL *mHv;
-EFI_HV_IVM_PROTOCOL *mHvIvm;
+extern EFI_HV_PROTOCOL *mHv;
+extern EFI_HV_IVM_PROTOCOL *mHvIvm;
 
 
 const EFI_EVENTLOG_PROTOCOL mEfiEventLogProtocol =
@@ -635,7 +635,7 @@ Return Value:
 
     allocSize = sizeof(EVENT_CHANNEL) + Attributes->BufferSize;
 
-    status = EfiHandleTableAllocateObject(mEventChannels, allocSize, &channel, &handle);
+    status = EfiHandleTableAllocateObject(mEventChannels, allocSize, (VOID **)&channel, &handle);
 
     if (EFI_ERROR(status))
     {

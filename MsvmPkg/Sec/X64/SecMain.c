@@ -1130,6 +1130,7 @@ Return Value:
 
     if (mIsolationConfiguration.ParavisorPresent == 0)
     {
+#ifdef _MSC_VER
         if (mIsolationConfiguration.IsolationType == HV_PARTITION_ISOLATION_TYPE_SNP)
         {
             //
@@ -1158,6 +1159,7 @@ Return Value:
                 return;
             }
         }
+#endif
     }
 
     if (Handler != 0)
@@ -1307,3 +1309,19 @@ Return Value:
 
     return EFI_SUCCESS;
 }
+
+
+#ifndef _MSC_VER
+
+NO_STACK_COOKIE // MU_CHANGE: Project Mu Runtime Randomized Stack Cookie Support
+EFI_STATUS
+EFIAPI
+_ModuleEntryPoint (
+  IN EFI_PEI_FILE_HANDLE     FileHandle,
+  IN CONST EFI_PEI_SERVICES  **PeiServices
+  )
+{
+    return 0;
+}
+
+#endif

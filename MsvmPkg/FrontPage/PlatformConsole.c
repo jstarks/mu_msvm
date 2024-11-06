@@ -476,7 +476,7 @@ BOOLEAN
 PlatformConsoleEventCallback(
     IN  VOID                            *Context,
     IN  const EFI_EVENT_DESCRIPTOR      *Metadata,
-    IN  const BOOTEVENT_DEVICE_ENTRY    *Event
+    IN  const VOID                      *OpaqueEvent
     )
 /*++
 
@@ -500,6 +500,7 @@ Return Value:
 
 --*/
 {
+    const BOOTEVENT_DEVICE_ENTRY *Event = OpaqueEvent;
     CHAR16  *friendlyName = NULL;
     CHAR16  *statusString = NULL;
     UINT32  *entryNumber = ((UINT32 *)Context);     // *entryNumber is a 1-based counter

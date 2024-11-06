@@ -266,9 +266,9 @@ VpciChannelReceivePacketCallback(
 // \param[in]  Buffer        The buffer containing the packet response
 // \param[in]  BufferLength  The packet length
 //
-// \return     EFI_SUCCESS
+// \return     VOID
 //
-EFI_STATUS
+VOID
 VpciChannelSendCompletionCallback(
     IN  VOID *Context OPTIONAL,
     IN  VOID *Buffer,
@@ -296,8 +296,6 @@ VpciChannelSendCompletionCallback(
     }
 
     gBS->SignalEvent(completionContext->WaitForCompletion);
-
-    return EFI_SUCCESS;
 }
 
 /// \brief      Sends a synchronous packet to the VSP.
@@ -1089,7 +1087,7 @@ VpcivscDriverBindingSupported (
     status = gBS->OpenProtocol(
         ControllerHandle,
         &gEfiVmbusProtocolGuid,
-        &vmbus,
+        (VOID **)&vmbus,
         This->DriverBindingHandle,
         ControllerHandle,
         EFI_OPEN_PROTOCOL_TEST_PROTOCOL);

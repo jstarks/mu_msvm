@@ -148,14 +148,14 @@ Return Value:
 
     status = gBS->AllocatePool(EfiBootServicesData,
                                VMBFS_MAXIMUM_MESSAGE_SIZE,
-                               &fileSystemInformation->PacketBuffer);
+                               (VOID **)&fileSystemInformation->PacketBuffer);
 
     if (EFI_ERROR(status))
     {
         goto Cleanup;
     }
 
-    status = gBS->AllocatePool(EfiBootServicesData, sizeof(*allocatedFileProtocol), &allocatedFileProtocol);
+    status = gBS->AllocatePool(EfiBootServicesData, sizeof(*allocatedFileProtocol), (VOID **)&allocatedFileProtocol);
 
     if (EFI_ERROR(status))
     {

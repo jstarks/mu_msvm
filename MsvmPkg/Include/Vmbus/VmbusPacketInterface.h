@@ -43,20 +43,18 @@ typedef struct _PACKET_LIB_CONTEXT
     PACKET_RING_CONTEXT     Incoming;
 
     //
-    // Incoming loop mutable fields. Keep these on their own cache line.
+    // Incoming loop mutable fields.
     //
 
-    HV_ALIGN(64)
     UINT32                  IncomingInCache;
     UINT32                  IncomingOut;
     UINT32                  EmptyRingBufferCount;
     UINT32                  NonspuriousInterruptCount;
 
     //
-    // Outgoing loop mutable fields. Keep these on their own cache line.
+    // Outgoing loop mutable fields.
     //
 
-    HV_ALIGN(64)
     UINT32                  OutgoingIn;
     UINT32                  OutgoingOutCache;
     UINT32                  PendingSendSize;

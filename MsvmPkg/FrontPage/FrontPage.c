@@ -431,7 +431,6 @@ VOID RemoveMenuFromList (UINT16 MenuId) {
   @retval  EFI_DEVICE_ERROR   Failed to create the menu.
 
 **/
-static
 ListBox*
 CreateTopMenu(IN UINT32 OrigX,
               IN UINT32 OrigY,

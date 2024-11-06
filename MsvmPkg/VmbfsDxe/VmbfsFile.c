@@ -32,7 +32,7 @@ const EFI_FILE_INFO gVmbFsEfiFileInfoPrototype =
     {0},
     {0},
     EFI_FILE_VALID_ATTR, // Attributes, more attributes to be filled by VmbfsOpen
-    {0} // FileName, To be filled by VmbfsOpen
+    0  // FileName, To be filled by VmbfsOpen
 };
 
 
@@ -303,7 +303,7 @@ Return Value:
 
     status = gBS->AllocatePool(EfiBootServicesData,
                                sizeof(*allocatedFileProtocol) + filePathLengthInBytes,
-                               &allocatedFileProtocol);
+                               (VOID **)&allocatedFileProtocol);
     if (EFI_ERROR(status))
     {
         status = EFI_OUT_OF_RESOURCES;

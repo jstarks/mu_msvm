@@ -8,7 +8,7 @@
 
 #include <Synchronization.h>
 
-#include "transportp.h"
+#include "Transportp.h"
 
 #define MAXIMUM_EXPECTED_INTERRUPT_COUNT 64
 #define UINT32_MAX 0xffffffff
@@ -45,10 +45,10 @@ PkpInitRingBufferControl(
     // Fetch and validate the in/out pointers.
     //
 
-    incomingIn = ReadNoFence((UINT32*)&Context->Incoming.Control->In);
-    incomingOut = ReadNoFence((UINT32*)&Context->Incoming.Control->Out);
-    outgoingIn = ReadNoFence((UINT32*)&Context->Outgoing.Control->In);
-    outgoingOut = ReadNoFence((UINT32*)&Context->Outgoing.Control->Out);
+    incomingIn = ReadNoFence((INT32*)&Context->Incoming.Control->In);
+    incomingOut = ReadNoFence((INT32*)&Context->Incoming.Control->Out);
+    outgoingIn = ReadNoFence((INT32*)&Context->Outgoing.Control->In);
+    outgoingOut = ReadNoFence((INT32*)&Context->Outgoing.Control->Out);
     if (!PkpValidatePointer(Context->Incoming.DataBytesInRing, incomingIn) ||
         !PkpValidatePointer(Context->Incoming.DataBytesInRing, incomingOut) ||
         !PkpValidatePointer(Context->Outgoing.DataBytesInRing, outgoingIn) ||
@@ -297,7 +297,7 @@ PkpCheckSendBufferFreeBytes(
         // the public version and check again.
         //
 
-        Out = ReadNoFence((UINT32*)&control->Out);
+        Out = ReadNoFence((INT32*)&control->Out);
         if (!PkpValidatePointer(DataBytesInRing, Out))
         {
             status = EFI_RING_CORRUPT_ERROR;
@@ -349,7 +349,7 @@ PkpCheckSendBufferFreeBytes(
                 pendingSendSize = DataBytesInRing - 1;
             }
 
-            WriteNoFence((UINT32*)&control->PendingSendSize, pendingSendSize);
+            WriteNoFence((INT32*)&control->PendingSendSize, pendingSendSize);
 
             //
             // Store the actual send size so that it can be retrieved by
@@ -367,7 +367,7 @@ PkpCheckSendBufferFreeBytes(
             //
 
             MemoryBarrier();
-            Out = ReadNoFence((UINT32*)&control->Out);
+            Out = ReadNoFence((INT32*)&control->Out);
             if (!PkpValidatePointer(DataBytesInRing, Out))
             {
                 status = EFI_RING_CORRUPT_ERROR;
@@ -448,7 +448,7 @@ PkCompleteInsertion(
     // before updating the In pointer and the other endpoint seeing the change.
     //
 
-    WriteRelease((UINT32*)&control->In, NewIn);
+    WriteRelease((INT32*)&control->In, NewIn);
 
     //
     // Ensure that the write to the public In pointer is visible before
@@ -462,13 +462,13 @@ PkCompleteInsertion(
     // Read the interrupt mask bit.
     //
 
-    interruptMask = ReadNoFence((UINT32*)&control->InterruptMask);
+    interruptMask = ReadNoFence((INT32*)&control->InterruptMask);
 
     //
     // Read and cache the public Out pointer.
     //
 
-    currentOut = ReadNoFence((UINT32*)&control->Out);
+    currentOut = ReadNoFence((INT32*)&control->Out);
     if (!PkpValidatePointer(dataBytesInRing, currentOut))
     {
         return EFI_RING_CORRUPT_ERROR;
@@ -545,7 +545,7 @@ PkCompleteRemoval(
     // Mark that an interrupt is expected if the ring is now empty.
     //
 
-    if ((UINT64)ReadNoFence((UINT32*)&control->In) == NewOut)
+    if ((UINT64)ReadNoFence((INT32*)&control->In) == NewOut)
     {
         PkpExpectInterrupt(PkLibContext, TRUE);
     }
@@ -556,7 +556,7 @@ PkCompleteRemoval(
 
     oldOut = PkLibContext->IncomingOut;
     PkLibContext->IncomingOut = NewOut;
-    WriteNoFence((UINT32*)&control->Out, NewOut);
+    WriteNoFence((INT32*)&control->Out, NewOut);
 
     //
     // Flush the write to the public Out pointer to ensure that the subsequent
@@ -570,13 +570,13 @@ PkCompleteRemoval(
     // Determine whether an interrupt may be necessary.
     //
 
-    pendingSendSize = ReadNoFence((UINT32*)&control->PendingSendSize);
+    pendingSendSize = ReadNoFence((INT32*)&control->PendingSendSize);
 
     //
     // Read and cache the public In pointer.
     //
 
-    currentIn = ReadNoFence((UINT32*)&control->In);
+    currentIn = ReadNoFence((INT32*)&control->In);
     if (!PkpValidatePointer(dataBytesInRing, currentIn))
     {
         return EFI_RING_CORRUPT_ERROR;
@@ -749,7 +749,7 @@ PkGetSendBuffer(
     {
         PkLibContext->PendingSendSize = 0;
         control = PkLibContext->Outgoing.Control;
-        WriteNoFence((UINT32*)&control->PendingSendSize, 0);
+        WriteNoFence((INT32*)&control->PendingSendSize, 0);
     }
 
     //
@@ -815,7 +815,7 @@ PkGetReceiveBuffer(
         // contents below do not get prefetched with stale data.
         //
 
-        in = ReadAcquire((UINT32*)&PkLibContext->Incoming.Control->In);
+        in = ReadAcquire((INT32*)&PkLibContext->Incoming.Control->In);
         if (!PkpValidatePointer(dataBytesInRing, in))
         {
             status = EFI_RING_CORRUPT_ERROR;
@@ -854,7 +854,12 @@ PkGetReceiveBuffer(
     // Prevent double fetches of the packet length.
     //
 
+#ifdef _MSC_VER
     _ReadWriteBarrier();
+#else
+  __asm__ __volatile__ ("":::"memory");
+#endif
+
     totalPacketSize = packetLength + sizeof(PREVIOUS_PACKET_OFFSET);
 
     //
@@ -1048,7 +1053,7 @@ PkSendPacketRaw(
     ASSERT(PacketBufSize > 0);
 
     newIn = PkLibContext->OutgoingIn;
-    status = PkGetSendBuffer(PkLibContext, &newIn, PacketBufSize, &buffer);
+    status = PkGetSendBuffer(PkLibContext, &newIn, PacketBufSize, (VOID **)&buffer);
     if (EFI_ERROR(status))
     {
         goto Cleanup;
@@ -1109,7 +1114,7 @@ PkGetOutgoingRingFreeBytes(
 
     dataBytesInRing = PkLibContext->Outgoing.DataBytesInRing;
     currentIn = PkLibContext->OutgoingIn;
-    currentOut = ReadNoFence((UINT32*)&PkLibContext->Outgoing.Control->Out);
+    currentOut = ReadNoFence((INT32*)&PkLibContext->Outgoing.Control->Out);
     if (!PkpValidatePointer(dataBytesInRing, currentOut))
     {
         return 0;
