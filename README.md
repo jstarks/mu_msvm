@@ -48,6 +48,24 @@ using the former `-patina` suffix should switch to the unsuffixed names. Consume
 using boolean-suffixed names must also update their selection for new releases.
 Existing release assets retain their names. Archive contents are unchanged.
 
+## Experimental Unenlightened X64 Timers
+
+The legacy C core can use an explicitly configured TSC frequency and local APIC
+timer instead of the Hyper-V reference counter and SynIC timer:
+
+```text
+stuart_build -c MsvmPkg/PlatformBuild.py TARGET=RELEASE TOOL_CHAIN_TAG=CLANGPDB BLD_*_USE_LEGACY_C_CORE=TRUE BLD_*_GENERIC_TSC_FREQUENCY=1000000000
+```
+
+The frequency is in Hz and must match the development platform, be at least
+10 MHz, and be an exact multiple of 10 MHz. It is fixed at build time so the
+counter works before PEI installs its PCD service. Zero preserves the normal
+Hyper-V timer selection. This is a bring-up profile, not general PC support or
+an end-to-end boot qualification.
+
+The local APIC driver and nested interrupt/TPL support retain their BSD notices
+and come from EDK2 commit `17f52bba035cfa5a18b8a8bf3e88e46bcb0da069`.
+
 ## Contributing
 
 This project welcomes [contributions](MsvmPkg/Docs/CONTRIBUTING.md) and suggestions.  Most contributions require you to agree to a

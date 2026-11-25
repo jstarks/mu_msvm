@@ -12,6 +12,7 @@
 #include <Library/TimerLib.h>
 #include <Library/IoLib.h>
 #include <Library/DebugLib.h>
+#include <Library/PcdLib.h>
 
 #if defined (MDE_CPU_AARCH64)
   #include <Library/HvHypercallLib.h>
@@ -126,6 +127,15 @@ Return Value:
 --*/
 {
  #if defined (MDE_CPU_X64)
+
+  if (FixedPcdGet64 (PcdGenericTscFrequency) != 0) {
+    UINT64  frequency = FixedPcdGet64 (PcdGenericTscFrequency);
+    if ((frequency < 10000000) || ((frequency % 10000000) != 0)) {
+      DEBUG ((DEBUG_ERROR, "Unenlightened timer requires a configured TSC frequency\n"));
+      CpuDeadLoop ();
+    }
+    return DivU64x64Remainder (AsmReadTsc (), frequency / 10000000, NULL);
+  }
 
   return AsmReadMsr64 (HvSyntheticMsrTimeRefCount);
 

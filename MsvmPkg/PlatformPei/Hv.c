@@ -53,12 +53,14 @@ Return Value:
 
   MsCpuid (cpuidResult.AsUINT32, HvCpuIdFunctionVersionAndFeatures);
   if (!cpuidResult.VersionAndFeatures.HypervisorPresent) {
+    PEI_FAIL_FAST_IF_FAILED (PcdSetBoolS (PcdHvEnabled, FALSE));
     DEBUG ((DEBUG_INFO, "%a - Hypervisor is not present \n", __func__));
     return;
   }
 
   MsCpuid (cpuidResult.AsUINT32, HvCpuIdFunctionHvInterface);
   if (cpuidResult.HvInterface.Interface != HvMicrosoftHypervisorInterface) {
+    PEI_FAIL_FAST_IF_FAILED (PcdSetBoolS (PcdHvEnabled, FALSE));
     DEBUG ((DEBUG_INFO, "%a - Hypervisor interface is not present \n", __func__));
     return;
   }

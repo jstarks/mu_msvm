@@ -224,7 +224,11 @@ INF MsvmPkg/PlatformDeviceStateHelper/PlatformDeviceStateHelper.inf
 INF MsvmPkg/SerialDxe/SerialDxe.inf
 INF MsvmPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.inf
 INF MsvmPkg/StorvscDxe/StorvscDxe.inf
+!if $(GENERIC_TSC_FREQUENCY) != 0
+INF MsvmPkg/GenericLocalApicTimerDxe/LocalApicTimerDxe.inf
+!else
 INF MsvmPkg/SynicTimerDxe/SynicTimerDxe.inf
+!endif
 INF MsvmPkg/SynthKeyDxe/SynthKeyDxe.inf
 INF MsvmPkg/VariableDxe/VariableDxe.inf
 INF MsvmPkg/VideoDxe/VideoDxe.inf

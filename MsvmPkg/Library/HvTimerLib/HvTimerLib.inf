@@ -23,6 +23,10 @@
 
 [LibraryClasses]
     DebugLib
+    PcdLib
+
+[FixedPcd]
+    gMsvmPkgTokenSpaceGuid.PcdGenericTscFrequency
 
 [LibraryClasses.AARCH64]
     HvHypercallLib
