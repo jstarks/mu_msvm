@@ -14,7 +14,8 @@
 [interface]
 # Interface 2.0 uses a combined PEI/DXE firmware volume on X64 and AARCH64.
 major = 2
-minor = 0
+# Interface 2.1 adds optional loader-supplied X64 timer information.
+minor = 1
 
 # Release version prefix ("major.minor"). The GitHub release workflow may
 # override this via the BASE_VERSION environment variable and assigns the patch

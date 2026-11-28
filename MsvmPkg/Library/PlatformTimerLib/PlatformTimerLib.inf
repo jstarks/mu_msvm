@@ -1,0 +1,28 @@
+## @file
+# Loader-supplied X64 clock frequencies and timer profile.
+# Copyright (c) Microsoft Corporation.
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+[Defines]
+  INF_VERSION = 0x00010005
+  BASE_NAME = PlatformTimerLib
+  FILE_GUID = 462ca24e-7d7b-4eca-9d38-e707a41f85cb
+  MODULE_TYPE = BASE
+  LIBRARY_CLASS = PlatformTimerLib
+
+[Sources]
+  Parse.c
+  PlatformTimerLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MsvmPkg/MsvmPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
+  PcdLib
+
+[FixedPcd]
+  gMsvmPkgTokenSpaceGuid.PcdFdBaseAddress
+  gMsvmPkgTokenSpaceGuid.PcdFdSize

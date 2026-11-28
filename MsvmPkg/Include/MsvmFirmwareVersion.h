@@ -73,6 +73,8 @@
 //
 #define MSVM_FIRMWARE_VERSION_FLAG_DIRTY     BIT0
 #define MSVM_FIRMWARE_VERSION_FLAG_OFFICIAL  BIT1
+// The X64 legacy-C image supports loader-supplied unenlightened timers.
+#define MSVM_FIRMWARE_VERSION_FLAG_X64_TIMER_CONFIG  BIT2
 
 //
 // Maximum sizes (including the terminating NUL) for the string fields.

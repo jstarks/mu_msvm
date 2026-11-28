@@ -508,6 +508,7 @@ enum UefiStructureType {
   UefiConfigHmat                           = 0x26,
   UefiConfigIort                           = 0x27,
   UefiConfigPcieBarApertures               = 0x28,
+  UefiConfigX64TimerInformation            = 0x29,
 };
 
 //
@@ -725,6 +726,15 @@ typedef struct _UEFI_CONFIG_PROCESSOR_INFORMATION {
   UINT32                ProcessorsPerVirtualSocket;
   UINT32                ThreadsPerProcessor;
 } UEFI_CONFIG_PROCESSOR_INFORMATION;
+
+// Optional X64 timer profile, immediately following StructureCount so SEC
+// can read it before the PEI PCD service exists. Frequencies are in Hz.
+typedef struct _UEFI_CONFIG_X64_TIMER_INFORMATION {
+  UEFI_CONFIG_HEADER    Header;
+  UINT64                TscFrequency;
+  UINT32                ApicFrequency;
+  UINT32                Reserved;
+} UEFI_CONFIG_X64_TIMER_INFORMATION;
 
 typedef struct _UEFI_CONFIG_MMIO {
   UINT64    MmioPageNumberStart;

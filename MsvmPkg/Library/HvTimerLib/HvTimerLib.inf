@@ -23,14 +23,11 @@
 
 [LibraryClasses]
     DebugLib
-    PcdLib
-
-[FixedPcd]
-    gMsvmPkgTokenSpaceGuid.PcdGenericTscFrequency
 
 [LibraryClasses.AARCH64]
     HvHypercallLib
 
 [LibraryClasses.X64]
     IoLib
+    PlatformTimerLib
 

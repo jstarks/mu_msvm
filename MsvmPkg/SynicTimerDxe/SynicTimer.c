@@ -15,6 +15,9 @@
 #include <Library/BaseLib.h>
 #include <Library/DebugLib.h>
 #include <Library/UefiBootServicesTableLib.h>
+#if defined (MDE_CPU_X64)
+  #include <Library/PlatformTimerLib.h>
+#endif
 
 EFI_STATUS
 EFIAPI
@@ -303,6 +306,13 @@ Return Value:
 --*/
 {
   EFI_STATUS  status;
+
+ #if defined (MDE_CPU_X64)
+  if (GetPlatformTimerInformation () != NULL) {
+    return EFI_UNSUPPORTED;
+  }
+
+ #endif
 
   mSintIndex  = PcdGet8 (PcdSynicTimerSintIndex);
   mTimerIndex = PcdGet8 (PcdSynicTimerTimerIndex);

@@ -10,6 +10,7 @@
 
 #include <Library/CrashLib.h>
 #include <Library/HvHypercallLib.h>
+#include <UefiConstants.h>
 
 #define PEI_FAIL_FAST_IF_FAILED(Status) \
     do \
@@ -26,19 +27,6 @@
 // On X64, the config blob starts after the end of the firmware, and after
 // the 6 pages for pagetables, 1 page for GDT entries, and 2 free RW pages.
 //
-
-#define MISC_PAGE_COUNT_PAGE_TABLES  6
-#define MISC_PAGE_COUNT_GDT_ENTRIES  1
-#define MISC_PAGE_COUNT_FREE_RW      2
-
-#define MISC_PAGE_COUNT_TOTAL  (\
-    MISC_PAGE_COUNT_PAGE_TABLES + \
-    MISC_PAGE_COUNT_GDT_ENTRIES + \
-    MISC_PAGE_COUNT_FREE_RW)
-
-#define MISC_PAGE_OFFSET_FREE_RW  (\
-    MISC_PAGE_COUNT_PAGE_TABLES + \
-    MISC_PAGE_COUNT_GDT_ENTRIES)
 
 #endif
 

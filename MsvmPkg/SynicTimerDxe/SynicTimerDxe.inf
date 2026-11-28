@@ -29,6 +29,9 @@
 [Sources]
     SynicTimer.c
 
+[LibraryClasses.X64]
+    PlatformTimerLib
+
 [Protocols]
     gEfiTimerArchProtocolGuid       ## PRODUCES
     gEfiHvProtocolGuid              ## CONSUMES

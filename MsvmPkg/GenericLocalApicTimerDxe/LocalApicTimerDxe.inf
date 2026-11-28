@@ -1,6 +1,6 @@
 ## @file
 # Local APIC timer driver that provides Timer Arch protocol.
-# PcdFSBClock is defined in MdePkg and it should be set by the consumer.
+# The loader supplies the undivided local APIC timer frequency.
 #
 # Copyright (c) 2005 - 2019, Intel Corporation. All rights reserved.<BR>
 # Copyright (c) 2019, Citrix Systems, Inc.
@@ -30,6 +30,7 @@
   NestedInterruptTplLib
   UefiDriverEntryPoint
   LocalApicLib
+  PlatformTimerLib
 
 [Sources]
   LocalApicTimerDxe.h
@@ -38,7 +39,5 @@
 [Protocols]
   gEfiCpuArchProtocolGuid       ## CONSUMES
   gEfiTimerArchProtocolGuid     ## PRODUCES
-[Pcd]
-  gEfiMdePkgTokenSpaceGuid.PcdFSBClock  ## CONSUMES
 [Depex]
   gEfiCpuArchProtocolGuid

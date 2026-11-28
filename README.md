@@ -50,21 +50,47 @@ Existing release assets retain their names. Archive contents are unchanged.
 
 ## Experimental Unenlightened X64 Timers
 
-The legacy C core can use an explicitly configured TSC frequency and local APIC
-timer instead of the Hyper-V reference counter and SynIC timer:
+The legacy C core can use loader-supplied TSC and local APIC frequencies instead
+of the Hyper-V reference counter and SynIC timer. Build one image without a
+frequency-specific macro:
 
 ```text
-stuart_build -c MsvmPkg/PlatformBuild.py TARGET=RELEASE TOOL_CHAIN_TAG=CLANGPDB BLD_*_USE_LEGACY_C_CORE=TRUE BLD_*_GENERIC_TSC_FREQUENCY=1000000000
+stuart_build -c MsvmPkg/PlatformBuild.py TARGET=RELEASE TOOL_CHAIN_TAG=CLANGPDB BLD_*_USE_LEGACY_C_CORE=TRUE
 ```
 
-The frequency is in Hz and must match the development platform, be at least
-10 MHz, and be an exact multiple of 10 MHz. It is fixed at build time so the
-counter works before PEI installs its PCD service. Zero preserves the normal
-Hyper-V timer selection. This is a bring-up profile, not general PC support or
-an end-to-end boot qualification.
+The loader places `UEFI_CONFIG_X64_TIMER_INFORMATION` (type `0x29`, 24 bytes)
+immediately after the configuration blob's `StructureCount` record. It contains
+a 64-bit TSC frequency, a 32-bit undivided local APIC frequency, and a zero
+reserved field. Both frequencies are in Hz and must match the platform. TSC
+must be at least 10 MHz and an exact multiple of 10 MHz; APIC must be nonzero.
+The firmware validates and captures these inputs without PEI services.
+
+OpenVMM supplies this record with:
+
+```text
+--hypervisor strudel --no-hv --no-vmbus --uefi firmware=path/to/MSVM.fd,tsc_frequency=1000000000,apic_frequency=100000000
+```
+
+The record requires firmware interface 2.1 and the
+`MSVM_FIRMWARE_VERSION_FLAG_X64_TIMER_CONFIG` capability. Only X64 legacy-C
+builds advertise that capability. Hyper-V launches retain their reference
+counter and SynIC timer, with no timer record. Unenlightened X64 fails explicitly
+when its clock input is missing or malformed. The old
+`BLD_*_GENERIC_TSC_FREQUENCY` build option has been removed.
+This remains a bring-up profile, not general PC support or a boot qualification.
 
 The local APIC driver and nested interrupt/TPL support retain their BSD notices
 and come from EDK2 commit `17f52bba035cfa5a18b8a8bf3e88e46bcb0da069`.
+
+The early parser has host-only tests. On ARM64 Linux, run:
+
+```bash
+clang -std=c11 -Wall -Wextra -Werror -fshort-wchar \
+  -I MU_BASECORE/MdePkg/Include -I MU_BASECORE/MdePkg/Include/AArch64 \
+  -I MsvmPkg/Include MsvmPkg/Library/PlatformTimerLib/Parse.c \
+  MsvmPkg/Library/PlatformTimerLib/UnitTest/TimerConfigTest.c -o /tmp/timer-config-tests
+/tmp/timer-config-tests
+```
 
 ## Contributing
 

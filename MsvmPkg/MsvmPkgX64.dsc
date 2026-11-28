@@ -137,6 +137,7 @@
   SynchronizationLib|MdePkg/Library/BaseSynchronizationLib/BaseSynchronizationLib.inf
   TimerLib|MsvmPkg/Library/HvTimerLib/HvTimerLib.inf
   NestedInterruptTplLib|MsvmPkg/Library/NestedInterruptTplLib/NestedInterruptTplLib.inf
+  PlatformTimerLib|MsvmPkg/Library/PlatformTimerLib/PlatformTimerLib.inf
   Tpm2HelpLib|SecurityPkg/Library/Tpm2HelpLib/Tpm2HelpLib.inf
   SortLib|MdeModulePkg/Library/BaseSortLib/BaseSortLib.inf
   UefiDecompressLib|MdePkg/Library/BaseUefiDecompressLib/BaseUefiDecompressLib.inf
@@ -562,7 +563,6 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdNvmeGenericTimeout|120
 
 [PcdsFixedAtBuild.X64]
-  gMsvmPkgTokenSpaceGuid.PcdGenericTscFrequency|$(GENERIC_TSC_FREQUENCY)
 !if $(PERF_TRACE_ENABLE) == TRUE
   # 16M should be enough to fit all the verbose measurements
   gEfiMdeModulePkgTokenSpaceGuid.PcdExtFpdtBootRecordPadSize|0x1000000
@@ -963,11 +963,8 @@
   MsvmPkg/PlatformDeviceStateHelper/PlatformDeviceStateHelper.inf
   MsvmPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.inf
   MsvmPkg/StorvscDxe/StorvscDxe.inf
-!if $(GENERIC_TSC_FREQUENCY) != 0
   MsvmPkg/GenericLocalApicTimerDxe/LocalApicTimerDxe.inf
-!else
   MsvmPkg/SynicTimerDxe/SynicTimerDxe.inf
-!endif
   MsvmPkg/SynthKeyDxe/SynthKeyDxe.inf
   MsvmPkg/VariableDxe/VariableDxe.inf
   MsvmPkg/VideoDxe/VideoDxe.inf

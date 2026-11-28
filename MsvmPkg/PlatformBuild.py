@@ -60,7 +60,6 @@ class PlatformBuilder(UefiBuilder, UpdateSettingsManager, SetupSettingsManager, 
         self.env.SetValue("BLD_*_BUILD_APPS", "FALSE", "App Build off by default")
         self.env.SetValue("PE_VALIDATION_PATH", self.edk2path.GetAbsolutePathOnThisSystemFromEdk2RelativePath("MsvmPkg", "image_validation.cfg"), "Image validation ignore list")
         self.env.SetValue("BLD_*_USE_LEGACY_C_CORE", "FALSE", "Default to the Patina core")
-        self.env.SetValue("BLD_*_GENERIC_TSC_FREQUENCY", "0", "Generic timer profile disabled")
 
         #
         # Build AARCH64 by using BUILD_ARCH=AARCH64 with PlatformBuild.py

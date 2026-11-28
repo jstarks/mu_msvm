@@ -9,6 +9,7 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 **/
 
 #include <Library/NestedInterruptTplLib.h>
+#include <Library/PlatformTimerLib.h>
 
 #include "LocalApicTimerDxe.h"
 
@@ -52,85 +53,6 @@ STATIC UINT32  mTimerFrequency;
 //
 // Worker Functions
 //
-
-/**
-  Ask the hypervisor (if present) for the local APIC timer frequency.
-
-  - Hyper-V (or anything implementing its interface) exposes
-    HV_X64_MSR_APIC_FREQUENCY when CPUID 0x40000003 says the frequency MSRs
-    are both accessible and available.
-  - VMware, and QEMU with vmware-cpuid-freq (its default), report the APIC bus
-    frequency in kHz in EBX of CPUID leaf 0x40000010.
-
-  @return  The frequency in Hz, or 0 if the hypervisor did not report one.
-**/
-STATIC
-UINT32
-GetHypervisorApicTimerFrequency (
-  VOID
-  )
-{
-  UINT32  MaxLeaf;
-  UINT32  RegEax;
-  UINT32  RegEbx;
-  UINT32  RegEcx;
-  UINT32  RegEdx;
-  UINT64  Frequency;
-
-  AsmCpuid (1, NULL, NULL, &RegEcx, NULL);
-  if ((RegEcx & BIT31) == 0) {
-    //
-    // CPUID.1:ECX.HYPERVISOR clear: bare metal, or a hypervisor that does not
-    // want to be seen.
-    //
-    return 0;
-  }
-
-  AsmCpuid (0x40000000, &MaxLeaf, &RegEbx, &RegEcx, &RegEdx);
-
-  //
-  // "Microsoft Hv"
-  //
-  if ((RegEbx == 0x7263694D) && (RegEcx == 0x666F736F) && (RegEdx == 0x76482074)) {
-    if (MaxLeaf < 0x40000003) {
-      return 0;
-    }
-
-    //
-    // HV_ACCESS_FREQUENCY_MSRS (EAX bit 11) says the MSRs may be read, and
-    // HV_FEATURE_FREQUENCY_MSRS_AVAILABLE (EDX bit 8) says they hold valid
-    // values. Reading the MSR without the first raises #GP.
-    //
-    AsmCpuid (0x40000003, &RegEax, NULL, NULL, &RegEdx);
-    if (((RegEax & BIT11) == 0) || ((RegEdx & BIT8) == 0)) {
-      return 0;
-    }
-
-    //
-    // HV_X64_MSR_APIC_FREQUENCY, in Hz.
-    //
-    Frequency = AsmReadMsr64 (0x40000023);
-    DEBUG ((DEBUG_INFO, "%a: HV_X64_MSR_APIC_FREQUENCY = %lu Hz\n", __func__, Frequency));
-  } else if (
-             //
-             // "VMwareVMware", or "KVMKVMKVM\0\0\0" (QEMU adds the leaf for KVM too)
-             //
-             ((RegEbx == 0x61774D56) && (RegEcx == 0x4D566572) && (RegEdx == 0x65726177)) ||
-             ((RegEbx == 0x4B4D564B) && (RegEcx == 0x564B4D56) && (RegEdx == 0x0000004D)))
-  {
-    if (MaxLeaf < 0x40000010) {
-      return 0;
-    }
-
-    AsmCpuid (0x40000010, NULL, &RegEbx, NULL, NULL);
-    Frequency = MultU64x32 (RegEbx, 1000);
-    DEBUG ((DEBUG_INFO, "%a: CPUID 0x40000010 APIC bus frequency = %u kHz\n", __func__, RegEbx));
-  } else {
-    return 0;
-  }
-
-  return (Frequency <= MAX_UINT32) ? (UINT32)Frequency : 0;
-}
 
 /**
   Interrupt Handler.
@@ -395,24 +317,26 @@ TimerDriverInitialize (
   IN EFI_SYSTEM_TABLE  *SystemTable
   )
 {
-  EFI_STATUS  Status;
+  EFI_STATUS                               Status;
+  CONST UEFI_CONFIG_X64_TIMER_INFORMATION  *Information;
 
   //
   // Initialize the pointer to our notify function.
   //
   mTimerNotifyFunction = NULL;
 
-  mTimerFrequency = GetHypervisorApicTimerFrequency ();
-  if (mTimerFrequency == 0) {
-    mTimerFrequency = PcdGet32 (PcdFSBClock);
+  Information = GetPlatformTimerInformation ();
+  if (Information == NULL) {
+    return EFI_UNSUPPORTED;
   }
+
+  mTimerFrequency = Information->ApicFrequency;
 
   DEBUG ((
     DEBUG_INFO,
-    "%a: local APIC timer frequency %u Hz (PcdFSBClock %u Hz)\n",
+    "%a: loader local APIC timer frequency %u Hz\n",
     __func__,
-    mTimerFrequency,
-    PcdGet32 (PcdFSBClock)
+    mTimerFrequency
     ));
 
   //

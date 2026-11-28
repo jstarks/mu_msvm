@@ -30,6 +30,9 @@
 #include <Library/BaseMemoryLib.h>
 #include <Library/HobLib.h>
 #include <Library/SafeIntLib.h>
+#if defined (MDE_CPU_X64)
+  #include <Library/PlatformTimerLib.h>
+#endif
 #include <AcpiReplacementTable.h>
 #include "AllowNamelessAggregate.h"
 #include "AssignStruct.h"
@@ -1202,6 +1205,7 @@ Return Value:
     0,                                                     // UefiConfigHmat
     0,                                                     // UefiConfigIort
     0,                                                     // UefiConfigPcieBarApertures
+    sizeof (UEFI_CONFIG_X64_TIMER_INFORMATION),            // UefiConfigX64TimerInformation
   };
 
   //
@@ -1348,6 +1352,24 @@ Return Value:
     DebugDumpUefiConfigStruct (header);
 
     switch (header->Type) {
+      case UefiConfigX64TimerInformation:
+      {
+ #if defined (MDE_CPU_X64)
+        CONST UEFI_CONFIG_X64_TIMER_INFORMATION  *Information = GetPlatformTimerInformation ();
+        if ((Information == NULL) ||
+            (header != (UEFI_CONFIG_HEADER *)((UINT8 *)configCount + sizeof (*configCount))) ||
+            (CompareMem (Information, header, sizeof (*Information)) != 0))
+        {
+          DEBUG ((DEBUG_ERROR, "Invalid or misplaced X64 timer information\n"));
+          FAIL_FAST_UNEXPECTED_HOST_BEHAVIOR ();
+        }
+
+ #else
+        DEBUG ((DEBUG_ERROR, "X64 timer information supplied to AARCH64 firmware\n"));
+        FAIL_FAST_UNEXPECTED_HOST_BEHAVIOR ();
+ #endif
+        break;
+      }
       case UefiConfigBiosInformation:
       {
         UEFI_CONFIG_BIOS_INFORMATION  *biosInfo = (UEFI_CONFIG_BIOS_INFORMATION *)header;

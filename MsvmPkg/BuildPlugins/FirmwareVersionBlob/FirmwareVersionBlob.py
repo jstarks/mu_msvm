@@ -66,6 +66,7 @@ class FirmwareVersionBlob(IUefiBuildPlugin):
     FW_VERSION_STRUCT_VERSION = 1
     FW_VERSION_FLAG_DIRTY = 0x1             # MSVM_FIRMWARE_VERSION_FLAG_DIRTY
     FW_VERSION_FLAG_OFFICIAL = 0x2         # MSVM_FIRMWARE_VERSION_FLAG_OFFICIAL
+    FW_VERSION_FLAG_X64_TIMER_CONFIG = 0x4
     FW_VERSION_BASE_VERSION_SIZE = 16
     FW_VERSION_GIT_COMMIT_SIZE = 48
     FW_VERSION_STRUCT_FORMAT = "<IHHIHH16s48s"
@@ -132,6 +133,9 @@ class FirmwareVersionBlob(IUefiBuildPlugin):
         if origin not in ("unknown", "open", "closed"):
             raise ValueError("SOURCE_ORIGIN must be unknown, open, or closed")
         flags = 0
+        if (thebuilder.env.GetValue("TARGET_ARCH") == "X64" and
+                thebuilder.env.GetValue("BLD_*_USE_LEGACY_C_CORE", "FALSE").upper() == "TRUE"):
+            flags |= self.FW_VERSION_FLAG_X64_TIMER_CONFIG
         if dirty:
             flags |= self.FW_VERSION_FLAG_DIRTY
         # Official builds are marked by the CI pipeline (e.g. building main, not
