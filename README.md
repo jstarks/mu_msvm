@@ -65,12 +65,15 @@ reserved field. Both frequencies are in Hz and must match the platform. TSC
 must be at least 10 MHz and an exact multiple of 10 MHz; APIC must be nonzero.
 The firmware validates and captures these inputs without PEI services.
 
-OpenVMM supplies this record with:
+OpenVMM queries the guest-visible clocks from its `virt` backend and supplies
+this record automatically:
 
 ```text
---hypervisor strudel --no-hv --no-vmbus --uefi firmware=path/to/MSVM.fd,tsc_frequency=1000000000,apic_frequency=100000000
+--hypervisor strudel --no-hv --no-vmbus --uefi firmware=path/to/MSVM.fd
 ```
 
+Strudel reports a 1 GHz TSC and a 100 MHz undivided local APIC clock. Backends
+that cannot report both clocks cannot use this unenlightened profile.
 The record requires firmware interface 2.1 and the
 `MSVM_FIRMWARE_VERSION_FLAG_X64_TIMER_CONFIG` capability. Only X64 legacy-C
 builds advertise that capability. Hyper-V launches retain their reference
